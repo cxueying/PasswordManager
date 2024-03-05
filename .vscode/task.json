@@ -1,0 +1,11 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run main",
+            "type": "shell",
+            "command": "python ${workspaceFolder}/Main.py",
+            "problemMatcher": []
+        }
+    ]
+}
