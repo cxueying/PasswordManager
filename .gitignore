@@ -1,2 +1,5 @@
 *.key
 *.yaml
+*/__pycache__/
+del.py
+*.bak*

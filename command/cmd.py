@@ -1,4 +1,4 @@
-from mycmd import operation
+from command import operation
 
 cmds = {
     "/help": lambda: operation.help(),
@@ -7,6 +7,5 @@ cmds = {
     "/add": lambda: operation.add(),
     "/get": lambda: operation.get(),
     "/delete": lambda: operation.delete(),
-    "/close": lambda: operation.close(),
-    "/show_all": lambda: operation.show_all(),
+
 }
