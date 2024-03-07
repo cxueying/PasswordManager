@@ -5,6 +5,7 @@ from pathlib import Path
 from cryptography.fernet import Fernet
 from db.db_manage import DatabaseManager
 from config import constants
+from logger.log import log
 
 class PasswordManager:
     
@@ -16,17 +17,23 @@ class PasswordManager:
     def import_key(self):   # 导入数据库密钥
         path = Path(constants.CONF_LOCATION, constants.FN_DB_KEY)
         if not path.exists() or not path.read_bytes():  # 文件不存在或文件为空
+            log.debug("加载数据库密钥失败：数据库密钥不存在")
             return None
         else:
+            log.debug("加载数据库密钥成功")
             return path.read_bytes()
 
     def generate_key(self):
         key = Fernet.generate_key()
         # 确保config目录存在 
         if not Path(constants.CONF_LOCATION).exists():
+            log.debug(f"目录 {Path(constants.CONF_LOCATION).name} 不存在")
             Path(constants.CONF_LOCATION).mkdir()
+            log.debug(f"成功创建目录：{Path(constants.CONF_LOCATION).name}")
+            
         path = Path(constants.CONF_LOCATION, constants.FN_DB_KEY)
         path.write_bytes(key)
+        log.debug(f"创建密钥成功：{path}")
         return key
 
     def encrypt(self, message):
@@ -46,10 +53,12 @@ class PasswordManager:
         
         # 文件缺失
         if not path_db_conf_key.exists() or not path_db_conf_yaml.exists():
+            log.debug("数据库配置文件缺失")
             return False
         
         # 文件为空
         if not path_db_conf_key.read_bytes() or not path_db_conf_yaml.read_text():
+            log.debug("数据库配置文件为空")
             return False
         
         # key是否合法
@@ -57,9 +66,11 @@ class PasswordManager:
         try:
             decode_key = base64.urlsafe_b64decode(path_db_conf_key.read_bytes())
         except:
+            log.debug("数据库配置文件密钥无法解密")
             return False
         else:
             if len(decode_key) != 32:
+                log.debug("数据库配置文件密钥非法")
                 return False
         
         # yaml 配置文件是否合法
@@ -69,6 +80,7 @@ class PasswordManager:
             conf_set = (conf_dict.keys())
             # 参数不相同
             if conf_set - db_conf_set != db_conf_set - conf_set:
+                log.debug("数据库配置文件参数非法")
                 return False
             
             # 尝试解密
@@ -78,9 +90,12 @@ class PasswordManager:
                 check_fernet.decrypt(conf_dict["user"].encode()).decode()
                 check_fernet.decrypt(conf_dict["password"].encode()).decode()
                 check_fernet.decrypt(conf_dict["database"].encode()).decode()
+                log.debug("数据库配置文件解密成功")
             except:
+                log.debug("数据库配置文件解密失败")
                 return False
         
+        log.debug("数据库配置文件及密钥合法")
         return True
     
     def __get_db_config(self):
@@ -88,6 +103,7 @@ class PasswordManager:
         user = input("请输入数据库管理员用户名：")
         password = getpass.getpass("请输入密码：")
         self.create_db_config(host, user, password)
+        
         
     
     def load_db_config(self):
@@ -109,6 +125,8 @@ class PasswordManager:
         db_conf_key = Fernet.generate_key()
         path_db_conf_key = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY)
         path_db_conf_key.write_bytes(db_conf_key)
+        log.debug("数据库配置文件密钥创建成功")
+        log.debug(path_db_conf_key)
         
         db_conf_fernet = Fernet(db_conf_key)
         
@@ -119,6 +137,9 @@ class PasswordManager:
             f'password: "{db_conf_fernet.encrypt(password.encode()).decode()}"\n' +
             f'database: "{db_conf_fernet.encrypt(database.encode()).decode()}"\n'
         )
+        
+        log.debug("数据库配置文件创建成功")
+        log.debug(path_db_conf_yaml)
         
     def backup_db_conf(self):
         path_db_conf_key = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY)
@@ -136,12 +157,22 @@ class PasswordManager:
                 yaml_bak_str = yaml_bak_str[:-1] + str(num)
                 if not Path(key_bak_str).exists() and not Path(yaml_bak_str).exists():
                     path_db_conf_key.rename(Path(key_bak_str))
+                    log.debug("数据库配置文件密钥备份成功")
+                    log.debug(Path(key_bak_str))
+                    
                     path_db_conf_yaml.rename(Path(yaml_bak_str))
+                    log.debug("数据库配置文件备份成功")
+                    log.debug(Path(yaml_bak_str))
                     break
                 num += 1
         else:
             path_db_conf_key.rename(key_bak)
+            log.debug("数据库配置文件密钥备份成功")
+            log.debug(key_bak)
+            
             path_db_conf_yaml.rename(yaml_bak)
+            log.debug("数据库配置文件备份成功")
+            log.debug(yaml_bak)
             
         
     def create_db_conn(self):
@@ -149,10 +180,13 @@ class PasswordManager:
         while True:
             if self.__check_config_legal():
                 db_conf = self.load_db_config()
-                print("正在尝试连接数据库...")
+                log.debug("获取数据库配置信息成功")
+                
+                log.debug("正在尝试连接数据库...")
                 db_manage = DatabaseManager(**db_conf)
                 if db_manage.conn == None:
-                    print("连接数据库失败！")
+                    log.debug("连接数据库失败！")
+                    
                     choose = None
                     while True:
                         choose = input("是否重新尝试(Y/n)：")
@@ -160,6 +194,7 @@ class PasswordManager:
                             break
                     
                     if choose in ["y", "Y"]:
+                        log.debug("尝试重新连接数据库")
                         if has_backup == False:
                             # 备份 密钥
                             self.backup_db_conf()
@@ -170,15 +205,20 @@ class PasswordManager:
                             Path(constants.CONF_LOCATION, constants.FN_DB_CONF_YAML).unlink()
                         continue
                     else:
+                        log.debug("取消连接数据库")
+                        log.debug("程序退出")
                         exit()
                 else:
-                    db_conf = self.load_db_config()
-                    return DatabaseManager(**db_conf)
+                    log.debug("成功连接数据库")
+                    return db_manage
                         
             else:
                 self.__get_db_config()
 
-        
+
+
+
+
     def add_password(self, website, username, password):
         return self.db_manager.add_password(website, username, self.encrypt(password))
     
@@ -192,6 +232,7 @@ class PasswordManager:
                 "password": self.decrypt(source_result[2])
             }
             if result["password"] == None:
+                log.debug("解密密码失败")
                 continue
             
             results.append(result)
@@ -201,8 +242,10 @@ class PasswordManager:
     def delete_password(self, website, username):
         result = self.db_manager.get_password(website, username)
         if result == False or result == None:
+            log.debug("查询不到信息")
             return False
         else:
             if self.decrypt(result[2]) == None:
+                log.debug("删除密码失败：密钥无法解密密码")
                 return False
         return self.db_manager.delete_password(website, username)
