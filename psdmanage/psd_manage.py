@@ -22,6 +22,9 @@ class PasswordManager:
 
     def generate_key(self):
         key = Fernet.generate_key()
+        # 确保config目录存在 
+        if not Path(constants.CONF_LOCATION).exists():
+            Path(constants.CONF_LOCATION).mkdir()
         path = Path(constants.CONF_LOCATION, constants.FN_DB_KEY)
         path.write_bytes(key)
         return key
