@@ -23,3 +23,12 @@
     git push origin v1.0    推送刚刚创建的 v1.0 标签
 
     git checkout v1.0   切换到 v1.0 版本
+
+    git add file1.txt   添加推送的文件
+    git commit -m "message"     提交的消息（提交到本地仓库）
+    
+    git remote add origin url      将本地仓库与 url 关联起来
+
+    git push origin master      将提交推送的github仓库
+        origin 是远程仓库的名字
+        master 是推送分支的名字
