@@ -23,7 +23,7 @@ class Log():
         handler.setLevel(logging.DEBUG)
         
         # 定义处理器输出格式
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(pathname)s - %(funcName)s(%(lineno)d): %(message)s")
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - File \"%(pathname)s\", line %(lineno)d: %(message)s")
         handler.setFormatter(formatter)
         
         # 给 logger 添加handler
@@ -36,7 +36,7 @@ class Log():
         console_handler.setLevel(logging.DEBUG)
         
         # 定义处理器输出格式
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(pathname)s - %(funcName)s(%(lineno)d): %(message)s")
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - File \"%(pathname)s\", line %(lineno)d: %(message)s")
         console_handler.setFormatter(formatter)
         
         # 给 logger 添加handler
