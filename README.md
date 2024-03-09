@@ -2,10 +2,11 @@
 
 # 使用
     需要链接Mysql数据库使用
-    第一次启动会要求连接数据库，依照提示输入信息即可
-    
+
     密钥和配置文件保存在 config 目录下，请妥善保存
     如果丢失 database.key ，则无法获取数据库中的密码
+
+    db_conf.key 与 dv_conf.yaml 是一一对应的
     db_conf.key 是解密 db_conf.yaml 的密钥
     db_conf.yaml 记录连接信息
     
