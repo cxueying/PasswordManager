@@ -10,7 +10,7 @@
 
 
 # 删除多余文件的脚本
-del.py
+clear.py
 
 # 测试文件
 test.py
