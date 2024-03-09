@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QDialog, QLineEdit, QLabel, QPushButton, QGridLayout, QHBoxLayout, QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QDialog, QLineEdit, QLabel, QPushButton, QGridLayout, QHBoxLayout, QWidget, QVBoxLayout, QMessageBox
 
 class PSDInputDialog(QDialog):
     """添加密码对话框
@@ -17,13 +17,13 @@ class PSDInputDialog(QDialog):
         self.psdEdit.setEchoMode(QLineEdit.EchoMode.Password) # 不可见
         
         # 标签
-        website_lbl = QLabel("网站")
-        name_lbl = QLabel("名字")
-        psd_lbl = QLabel("密码")
+        website_lbl = QLabel("网站：")
+        name_lbl = QLabel("名字：")
+        psd_lbl = QLabel("密码：")
 
         # 提交按钮
         self.btn = QPushButton('OK', self)
-        self.btn.clicked.connect(self.accept)
+        self.btn.clicked.connect(self.onOkClicked)
         
         # 表格排列
         self.psd_input = QWidget()
@@ -50,7 +50,22 @@ class PSDInputDialog(QDialog):
         
         
         self.setLayout(self.vbox)
-        
+       
+    def onOkClicked(self):
+        website = self.websiteEdit.text()
+        username =self.usernameEdit.text()
+        password = self.psdEdit.text()
+        if website.strip() == "":  # 检查 websiteEdit 是否为空（或只包含空白字符）
+            QMessageBox.warning(self, "提示", "请输入网站")
+            return
+        if username.strip() == "":
+            QMessageBox.warning(self, "提示", "请输入用户名")
+            return
+        if password.strip() == "":
+            QMessageBox.warning(self, "提示", "请输入密码")
+            
+        self.accept()  # 如果 QLineEdit 中有文本，则接受对话框（关闭并返回 QDialog.Accepted）
+     
     def showEvent(self, event):
         super().showEvent(event)
         self.websiteEdit.setFocus()

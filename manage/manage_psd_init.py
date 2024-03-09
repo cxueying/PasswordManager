@@ -9,11 +9,12 @@ from logger.log import log
 
 class PasswordManagerInit:
     def __init__(self):
-        self.key = self.import_key() or self.generate_key()
+        self.key = self.__import_key() or self.__generate_key()
         self.fernet = Fernet(self.key)
         self.db_manager = self.create_db_conn()
+        self.connected = False
 
-    def import_key(self):   # 导入数据库密钥
+    def __import_key(self):   # 导入数据库密钥
         path = Path(constants.CONF_LOCATION, constants.FN_DB_KEY)
         if not path.exists() or not path.read_bytes():  # 文件不存在或文件为空
             log.debug("加载数据库密钥失败：数据库密钥不存在")
@@ -22,7 +23,7 @@ class PasswordManagerInit:
             log.debug("加载数据库密钥成功")
             return path.read_bytes()
 
-    def generate_key(self):
+    def __generate_key(self):
         key = Fernet.generate_key()
         # 确保config目录存在 
         if not Path(constants.CONF_LOCATION).exists():
@@ -97,15 +98,7 @@ class PasswordManagerInit:
         log.debug("数据库配置文件及密钥合法")
         return True
     
-    def __get_db_config(self):
-        host = input("请输入主机地址：")
-        user = input("请输入数据库管理员用户名：")
-        password = getpass.getpass("请输入密码：")
-        self.create_db_config(host, user, password)
-        
-        
-    
-    def load_db_config(self):
+    def __load_db_config(self):
         path_db_conf_yaml = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_YAML)
         path_db_conf_key = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY)
         
@@ -139,77 +132,33 @@ class PasswordManagerInit:
         
         log.debug("数据库配置文件创建成功")
         log.debug(path_db_conf_yaml)
-        
-    def backup_db_conf(self):
-        path_db_conf_key = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY)
-        path_db_conf_yaml = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_YAML)
-        
-        key_bak = Path(path_db_conf_key.parent, path_db_conf_key.name + ".bak" + "1")
-        yaml_bak = Path(path_db_conf_yaml.parent, path_db_conf_yaml.name + ".bak" + "1")
-
-        if key_bak.exists() or yaml_bak.exists():
-            key_bak_str = str(key_bak)
-            yaml_bak_str = str(yaml_bak)
-            num = int(key_bak_str[-1]) + 1
-            while True:
-                key_bak_str = key_bak_str[:-1] + str(num)
-                yaml_bak_str = yaml_bak_str[:-1] + str(num)
-                if not Path(key_bak_str).exists() and not Path(yaml_bak_str).exists():
-                    path_db_conf_key.rename(Path(key_bak_str))
-                    log.debug("数据库配置文件密钥备份成功")
-                    log.debug(Path(key_bak_str))
-                    
-                    path_db_conf_yaml.rename(Path(yaml_bak_str))
-                    log.debug("数据库配置文件备份成功")
-                    log.debug(Path(yaml_bak_str))
-                    break
-                num += 1
-        else:
-            path_db_conf_key.rename(key_bak)
-            log.debug("数据库配置文件密钥备份成功")
-            log.debug(key_bak)
-            
-            path_db_conf_yaml.rename(yaml_bak)
-            log.debug("数据库配置文件备份成功")
-            log.debug(yaml_bak)
             
         
     def create_db_conn(self):
-        has_backup = False
-        while True:
-            if self.__check_config_legal():
-                db_conf = self.load_db_config()
-                log.debug("获取数据库配置信息成功")
-                
-                log.debug("正在尝试连接数据库...")
-                db_manage = DatabaseManager(**db_conf)
-                if db_manage.conn == None:
-                    log.debug("连接数据库失败！")
-                    
-                    choose = None
-                    while True:
-                        choose = input("是否重新尝试(Y/n)：")
-                        if choose in ["y", "Y", "n", "N"]:
-                            break
-                    
-                    if choose in ["y", "Y"]:
-                        log.debug("尝试重新连接数据库")
-                        if has_backup == False:
-                            # 备份 密钥
-                            self.backup_db_conf()
-                            has_backup = True
-                        else:
-                            # 删除之前创建、无法连接的配置文件（不包括 bak 文件）
-                            Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY).unlink()
-                            Path(constants.CONF_LOCATION, constants.FN_DB_CONF_YAML).unlink()
-                        continue
-                    else:
-                        log.debug("取消连接数据库")
-                        log.debug("程序退出")
-                        exit()
-                else:
-                    log.debug("成功连接数据库")
-                    return db_manage
-                        
+        if self.__check_config_legal():
+            db_conf = self.__load_db_config()
+            log.debug("获取数据库配置信息成功")
+            
+            log.debug("正在尝试连接数据库...")
+            db_manage = DatabaseManager(**db_conf)
+            if db_manage.conn == None:
+                log.debug("连接数据库失败！")
+                self.connected = False
+                return False
             else:
-                self.__get_db_config()
+                log.debug("成功连接数据库")
+                self.connected = True
+                return db_manage
+                
+    def get_db_conf(self):
+        result = self.__load_db_config()
+        return {
+            "host": result["host"],
+            "user": result["user"]
+        }
+        
+    def update_db_manage(self):
+        self.db_manager = self.create_db_conn()
+        
+    def is_db_connected(self):
+        return self.connected

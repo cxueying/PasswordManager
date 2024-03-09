@@ -12,15 +12,17 @@ class MainContainer(QWidget):
     def initUI(self):
         self.container = QStackedWidget(self)
         
-        psd_manage_page = PSDManagePage(self.parent)
+        self.psd_manage_page = PSDManagePage(self.parent)
         db_conf_page = DBConfPage()
         
         # 添加页面
-        self.container.addWidget(psd_manage_page)
+        self.container.addWidget(self.psd_manage_page)
         self.container.addWidget(db_conf_page)
         
         
     def setCurrentIndex(self, page_num):
+        if page_num == 0:
+            self.psd_manage_page.fresh_psd_table()
         self.container.setCurrentIndex(page_num)
         
     # 随着窗口大小改变改变 container 的大小

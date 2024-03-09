@@ -1,9 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget,QTableWidgetItem, QPushButton, QSpacerItem, QSizePolicy, QApplication, QHBoxLayout
-from manage.manage_psd import PasswordManager
+from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget,QTableWidgetItem, QPushButton, QSpacerItem, QSizePolicy, QApplication, QHBoxLayout, QMessageBox
+from manage.manage_psd import manage
 from gui.dialog.psd_input_dialog import PSDInputDialog
 
-
-manage = PasswordManager()
 
 class PSDManagePage(QWidget):
     def __init__(self, parent):
@@ -24,6 +22,9 @@ class PSDManagePage(QWidget):
     
     def fresh_psd_table(self):
         results = manage.get_all_password()
+        if results == None:
+            self.table.setRowCount(0)
+            return 
         self.table.setRowCount(0)
         self.table.setColumnCount(5)
         self.table.setHorizontalHeaderLabels(["网站", "用户名", "密码", "显示", "删除"])
@@ -66,18 +67,19 @@ class PSDManagePage(QWidget):
         
         
     def add_button_clicked(self):
+        if not manage.is_db_connected():
+            QMessageBox.warning(self, "错误", "数据库未连接")
+            return
         dialog = PSDInputDialog()
-        
         if dialog.exec():
-            manage.add_password(dialog.websiteEdit.text(), dialog.usernameEdit.text(), dialog.psdEdit.text())
+            if manage.add_password(dialog.websiteEdit.text(), dialog.usernameEdit.text(), dialog.psdEdit.text()) == False:
+                QMessageBox.warning(self, "错误", "添加密码失败")
             self.fresh_psd_table()
         
         
     def delete_row(self, row):
         website = self.table.item(row, 0).text()
         username = self.table.item(row, 1).text()
-        print(website)
-        print(username)
         
         manage.delete_password(website, username)
         

@@ -6,10 +6,18 @@ class PasswordManager(PasswordManagerInit):
         super().__init__()
 
     def add_password(self, website, username, password):
-        return self.db_manager.add_password(website, username, self.encrypt(password))
+        if self.connected:
+            return self.db_manager.add_password(website, username, self.encrypt(password))
+        else:
+            return False
     
     def get_all_password(self):
-        source_results = self.db_manager.get_all_password()
+        if not self.connected:
+            return None
+        try:
+            source_results = self.db_manager.get_all_password()
+        except:
+            return None
         results = []
         for source_result in source_results:
             result = {
@@ -26,6 +34,9 @@ class PasswordManager(PasswordManagerInit):
         return results
     
     def delete_password(self, website, username):
+        if not self.connected:
+            return False
+        
         result = self.db_manager.get_password(website, username)
         if result == False or result == None:
             log.debug("查询不到信息")
@@ -35,3 +46,6 @@ class PasswordManager(PasswordManagerInit):
                 log.debug("删除密码失败：密钥无法解密密码")
                 return False
         return self.db_manager.delete_password(website, username)
+    
+
+manage = PasswordManager()
