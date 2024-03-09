@@ -8,13 +8,7 @@
     如果丢失 database.key ，则无法获取数据库中的密码
     db_conf.key 是解密 db_conf.yaml 的密钥
     db_conf.yaml 记录连接信息
-# 操作命令
-    /help 查看所有命令
-    /exit 退出程序
-    /cls 清屏
-    /add 添加密码
-    /get 获取密码
-    /delete 删除密码
+    
 # Git 使用
     git config --global user.email "you@example.com"
     git config --global user.name "Your Name"
