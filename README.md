@@ -27,8 +27,6 @@
         origin 是远程仓库的名字
         master 是推送分支的名字
 
-    git checkout main       切换到 main 分支
-
     git merge feature-branch    将feature-branch 分支合并到当前分支
 
     git push origin main    将main分支推送到远程仓库
@@ -44,3 +42,11 @@
     git tag -d v1.0 删除 v1.0 标签
 
     git push --delete origin v1.0   删除远程仓库（通常是origin）上名为v1.0的标签（需要先删除本地标签）
+
+    git branch feature-x    创建 feature-x分支（不会自动切换）
+
+    git checkout feature-x  切换到feature-x分支
+
+    git checkout -b feature-x   创建并切换到feature-x分支
+
+    git switch -c feature-x     切换分支，或者创建并切换到新分支：
