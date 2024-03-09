@@ -29,10 +29,16 @@ class DBConfPage(QWidget):
         
         db_conf = manage.get_db_conf()
         
-        self.hostEdit = QLineEdit(db_conf["host"], self)
-        self.userEdit = QLineEdit(db_conf["user"], self)
-        self.passwordEdit = QLineEdit("********", self)
-        self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Password)
+        if db_conf == None:
+            self.hostEdit = QLineEdit(self)
+            self.userEdit = QLineEdit(self)
+            self.passwordEdit = QLineEdit(self)
+            self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Password)
+        else:
+            self.hostEdit = QLineEdit(db_conf["host"], self)
+            self.userEdit = QLineEdit(db_conf["user"], self)
+            self.passwordEdit = QLineEdit("********", self)
+            self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Password)
         
         self.btn = QPushButton("OK", self)
         hbox = QHBoxLayout()

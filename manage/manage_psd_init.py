@@ -11,8 +11,8 @@ class PasswordManagerInit:
     def __init__(self):
         self.key = self.__import_key() or self.__generate_key()
         self.fernet = Fernet(self.key)
-        self.db_manager = self.create_db_conn()
         self.connected = False
+        self.db_manager = self.create_db_conn()
 
     def __import_key(self):   # 导入数据库密钥
         path = Path(constants.CONF_LOCATION, constants.FN_DB_KEY)
@@ -149,8 +149,11 @@ class PasswordManagerInit:
                 log.debug("成功连接数据库")
                 self.connected = True
                 return db_manage
+        return None
                 
     def get_db_conf(self):
+        if not self.__check_config_legal():
+            return None
         result = self.__load_db_config()
         return {
             "host": result["host"],
