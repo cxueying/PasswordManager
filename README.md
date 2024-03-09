@@ -26,3 +26,21 @@
     git push origin master      将提交推送的github仓库
         origin 是远程仓库的名字
         master 是推送分支的名字
+
+    git checkout main       切换到 main 分支
+
+    git merge feature-branch    将feature-branch 分支合并到当前分支
+
+    git push origin main    将main分支推送到远程仓库
+
+    git branch  查看本地分支
+
+    git branch -r   查看与本地仓库关联的远程仓库
+
+    git branch -a   查看本地和远程分支
+
+    git tag     查看仓库中的所有标签
+
+    git tag -d v1.0 删除 v1.0 标签
+
+    git push --delete origin v1.0   删除远程仓库（通常是origin）上名为v1.0的标签（需要先删除本地标签）
