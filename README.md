@@ -37,6 +37,13 @@
 
     git branch -a   查看本地和远程分支
 
+    git branch -d feature-x     删除本地feature-x分支
+
+    git branch -D feature-x     强制删除本地feature-x分支
+
+    git push remote-name --delete feature-x     删除远程仓库中的 feature-x 分支     remote-name为远程仓库名，通常为origin
+
+
     git tag     查看仓库中的所有标签
 
     git tag -d v1.0 删除 v1.0 标签
