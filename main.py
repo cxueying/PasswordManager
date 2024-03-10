@@ -8,6 +8,7 @@ from logger.log import log
 def main():
     app = QApplication(sys.argv)
     main_window = MainWindow()
+    app.setStyle("Fusion")
     sys.exit(app.exec())
 
 

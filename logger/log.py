@@ -49,7 +49,7 @@ class Log():
         
         # 添加日志处理器
         self.__add_time_file_handler()
-        self.__add_console_handler()
+        # self.__add_console_handler()
 
 
 log = Log().logger
