@@ -15,7 +15,7 @@ class PasswordManagerInit:
         self.db_manager = self.create_db_conn()
 
     def __import_key(self):   # 导入数据库密钥
-        path = Path(constants.CONF_LOCATION, constants.FN_DB_KEY)
+        path = Path(constants.DB_KEY)
         if not path.exists() or not path.read_bytes():  # 文件不存在或文件为空
             log.debug("加载数据库密钥失败：数据库密钥不存在")
             return None
@@ -26,12 +26,14 @@ class PasswordManagerInit:
     def __generate_key(self):
         key = Fernet.generate_key()
         # 确保config目录存在 
-        if not Path(constants.CONF_LOCATION).exists():
-            log.debug(f"目录 {Path(constants.CONF_LOCATION).name} 不存在")
-            Path(constants.CONF_LOCATION).mkdir()
-            log.debug(f"成功创建目录：{Path(constants.CONF_LOCATION).name}")
+        if not Path(constants.CONF_PATH).exists():
+            log.debug(f"目录 {Path(constants.CONF_PATH)} 不存在")
+            if not Path(constants.CONF_PATH).parent.exists():
+                Path(constants.CONF_PATH).parent.mkdir()
+            Path(constants.CONF_PATH).mkdir()
+            log.debug(f"成功创建目录：{Path(constants.CONF_PATH)}")
             
-        path = Path(constants.CONF_LOCATION, constants.FN_DB_KEY)
+        path = Path(constants.DB_KEY)
         path.write_bytes(key)
         log.debug(f"创建密钥成功：{path}")
         return key
@@ -48,8 +50,8 @@ class PasswordManagerInit:
     # 检查 config 下的数据库配置文件是否合法
     # db_conf.key  db_conf.yaml
     def __check_config_legal(self):
-        path_db_conf_yaml = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_YAML)
-        path_db_conf_key = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY)
+        path_db_conf_yaml = Path(constants.DB_CONF)
+        path_db_conf_key = Path(constants.DB_CONF_KEY)
         
         # 文件缺失
         if not path_db_conf_key.exists() or not path_db_conf_yaml.exists():
@@ -99,8 +101,8 @@ class PasswordManagerInit:
         return True
     
     def __load_db_config(self):
-        path_db_conf_yaml = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_YAML)
-        path_db_conf_key = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY)
+        path_db_conf_yaml = Path(constants.DB_CONF)
+        path_db_conf_key = Path(constants.DB_CONF_KEY)
         
         load_fernet = Fernet(path_db_conf_key.read_bytes())
         conf_dict = yaml.safe_load(path_db_conf_yaml.read_text())
@@ -115,14 +117,14 @@ class PasswordManagerInit:
     def create_db_config(self, host, user, password, database=constants.DB_NAME):
         # 创建密钥并导出
         db_conf_key = Fernet.generate_key()
-        path_db_conf_key = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_KEY)
+        path_db_conf_key = Path(constants.DB_CONF_KEY)
         path_db_conf_key.write_bytes(db_conf_key)
         log.debug("数据库配置文件密钥创建成功")
         log.debug(path_db_conf_key)
         
         db_conf_fernet = Fernet(db_conf_key)
         
-        path_db_conf_yaml = Path(constants.CONF_LOCATION, constants.FN_DB_CONF_YAML)
+        path_db_conf_yaml = Path(constants.DB_CONF)
         path_db_conf_yaml.write_text(
             f'host: "{db_conf_fernet.encrypt(host.encode()).decode()}"\n' +
             f'user: "{db_conf_fernet.encrypt(user.encode()).decode()}"\n' +

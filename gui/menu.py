@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QApplication
+from PyQt6.QtGui import QFont
 from gui.container import MainContainer
 
 
@@ -30,6 +31,5 @@ class MainMenu(QWidget):
         exit_button = MenuButton("退出")
         exit_button.clicked.connect(QApplication.instance().quit)
         self.layout.addWidget(exit_button)
-
 
 

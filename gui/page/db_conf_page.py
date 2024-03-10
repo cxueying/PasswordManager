@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QPushButton, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
+from PyQt6.QtGui import QFont
 from manage.manage_psd import manage
 
 class DBConfPage(QWidget):
@@ -10,12 +11,16 @@ class DBConfPage(QWidget):
         self.db_conf = QWidget()
         self.create_db_conf_widget()
         
+        self.db_info = QWidget()
+        self.create_db_info_widget()
+        
         hbox = QHBoxLayout()
         hbox.addStretch(1)
         hbox.addWidget(self.db_conf)
         hbox.addStretch(1)
         
         vbox = QVBoxLayout()
+        vbox.addWidget(self.db_info)
         vbox.addStretch(1)
         vbox.addLayout(hbox)
         vbox.addStretch(1)
@@ -26,6 +31,14 @@ class DBConfPage(QWidget):
         host = QLabel("主机：")
         user = QLabel("账号：")
         password = QLabel("密码：")
+        
+        # 设置字体大小
+        font = QFont()
+        font.setPointSize(16)
+        
+        host.setFont(font)
+        user.setFont(font)
+        password.setFont(font)
         
         db_conf = manage.get_db_conf()
         
@@ -40,7 +53,12 @@ class DBConfPage(QWidget):
             self.passwordEdit = QLineEdit("********", self)
             self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Password)
         
+        self.hostEdit.setFont(font)
+        self.userEdit.setFont(font)
+        self.passwordEdit.setFont(font)
+        
         self.btn = QPushButton("OK", self)
+        self.setFont(font)
         hbox = QHBoxLayout()
         hbox.addStretch(1)
         hbox.addWidget(self.btn)
@@ -79,6 +97,42 @@ class DBConfPage(QWidget):
         
         manage.create_db_config(host, user, password)
         manage.update_db_manage()
+        self.set_db_status_style()
         
         
+    def create_db_info_widget(self):
+        db_status_title = QLabel("数据库状态：")
+        self.db_status = QLabel()
         
+        font = QFont()
+        font.setPointSize(16)
+        
+        db_status_title.setFont(font)
+        self.db_status.setFont(font)
+        
+        self.set_db_status_style()
+        
+        hbox = QHBoxLayout()
+        hbox.addWidget(db_status_title)
+        hbox.addWidget(self.db_status)
+        hbox.addStretch(1)
+        
+        
+        self.db_info.setLayout(hbox)
+        
+    def set_db_status_style(self):
+        if manage.is_db_connected():
+            self.db_status.setText("已连接")
+            self.db_status.setStyleSheet("""
+                QLabel {
+                    color: #00FF00;
+                }
+            """)
+        
+        else:
+            self.db_status.setText("未连接")
+            self.db_status.setStyleSheet("""
+                QLabel {
+                    color: #FF0000;
+                }
+            """)

@@ -39,13 +39,13 @@ class DatabaseManager:
                     password VARCHAR(255) NOT NULL,
                     PRIMARY KEY(website, username)
                 )
-            """.format(constants.DB_TABLE_PASSWORD))
+            """.format(constants.TABLE_PASSWORD))
             
-            log.debug(f"创建表成功：{constants.DB_TABLE_PASSWORD}")
+            log.debug(f"创建表成功：{constants.TABLE_PASSWORD}")
             
         except mysql.connector.Error as e:
             
-            log.debug(f"创建表失败：{constants.DB_TABLE_PASSWORD}")
+            log.debug(f"创建表失败：{constants.TABLE_PASSWORD}")
             log.debug(e)
 
     def close_connection(self):
@@ -61,7 +61,7 @@ class DatabaseManager:
 
     def add_password(self, website, username, password):
         try:
-            sql = "INSERT INTO {} (website, username, password) VALUES(%s, %s, %s)".format(constants.DB_TABLE_PASSWORD)
+            sql = "INSERT INTO {} (website, username, password) VALUES(%s, %s, %s)".format(constants.TABLE_PASSWORD)
             self.conn.cursor().execute(sql, (website, username, password))
             self.conn.commit()
             
@@ -76,7 +76,7 @@ class DatabaseManager:
 
     def get_all_password(self):
         try:
-            sql = "SELECT * FROM {}".format(constants.DB_TABLE_PASSWORD)
+            sql = "SELECT * FROM {}".format(constants.TABLE_PASSWORD)
             cursor = self.conn.cursor()
             cursor.execute(sql)
             
@@ -91,7 +91,7 @@ class DatabaseManager:
 
     def get_password(self, website, username):
         try:
-            sql = "SELECT * FROM {} where website = %s and username = %s".format(constants.DB_TABLE_PASSWORD)
+            sql = "SELECT * FROM {} where website = %s and username = %s".format(constants.TABLE_PASSWORD)
             cursor = self.conn.cursor()
             cursor.execute(sql, (website, username))
             return cursor.fetchone()
@@ -103,7 +103,7 @@ class DatabaseManager:
 
     def delete_password(self, website, username):
         try:
-            sql = "DELETE FROM {} WHERE website=%s AND username=%s".format(constants.DB_TABLE_PASSWORD)
+            sql = "DELETE FROM {} WHERE website=%s AND username=%s".format(constants.TABLE_PASSWORD)
             cursor = self.conn.cursor()
             cursor.execute(sql, (website, username))
             self.conn.commit()

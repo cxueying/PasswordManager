@@ -23,10 +23,10 @@ class PasswordManager(PasswordManagerInit):
             result = {
                 "website": source_result[0],
                 "username": source_result[1],
-                "password": self.decrypt(source_result[2])
+                "password": source_result[2]
             }
-            if result["password"] == None:
-                log.debug("解密密码失败")
+            if self.decrypt(source_result[2]) == None:
+                log.debug("解密用户密码失败")
                 continue
             
             results.append(result)

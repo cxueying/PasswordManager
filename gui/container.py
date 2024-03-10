@@ -6,7 +6,7 @@ from gui.page.db_conf_page import DBConfPage
 class MainContainer(QWidget):
     def __init__(self, parent: QMainWindow):
         self.parent = parent
-        super().__init__(parent)
+        super().__init__()
         self.initUI()
         
     def initUI(self):
@@ -24,7 +24,8 @@ class MainContainer(QWidget):
         if page_num == 0:
             self.psd_manage_page.fresh_psd_table()
         self.container.setCurrentIndex(page_num)
-        
+    
+    
     # 随着窗口大小改变改变 container 的大小
     def resizeEvent(self, e):
         self.container.setGeometry(
@@ -33,3 +34,5 @@ class MainContainer(QWidget):
             self.parent.size().width() - 180,
             self.parent.size().height() - 30
         )
+        
+    

@@ -16,10 +16,10 @@ class Log():
         # 创建日志处理器
         filename = datetime.datetime.now().strftime("%Y-%m-%d") + ".log"
         # 确保目录 logs 存在
-        if not Path(constants.LOGS_LOCATION).exists():
-            Path(constants.LOGS_LOCATION).mkdir()
+        if not Path(constants.LOGS_PATH).exists():
+            Path(constants.LOGS_PATH).mkdir()
             
-        handler = TimedRotatingFileHandler(Path(constants.LOGS_LOCATION, filename), when="midnight", encoding='utf-8')
+        handler = TimedRotatingFileHandler(Path(constants.LOGS_PATH, filename), when="midnight", encoding='utf-8')
         handler.setLevel(logging.INFO)
         
         # 定义处理器输出格式
@@ -49,7 +49,7 @@ class Log():
         
         # 添加日志处理器
         self.__add_time_file_handler()
-        # self.__add_console_handler()
+        self.__add_console_handler()
 
 
 log = Log().logger
