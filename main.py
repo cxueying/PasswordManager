@@ -1,5 +1,4 @@
 import sys
-# from command.cmd import cmds
 from PyQt6.QtWidgets import QApplication
 from gui.main import MainWindow
 from logger.log import log
@@ -7,8 +6,8 @@ from logger.log import log
 
 def main():
     app = QApplication(sys.argv)
-    main_window = MainWindow()
     app.setStyle("Fusion")
+    main_window = MainWindow()
     sys.exit(app.exec())
 
 

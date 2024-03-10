@@ -20,7 +20,7 @@ class Log():
             Path(constants.LOGS_LOCATION).mkdir()
             
         handler = TimedRotatingFileHandler(Path(constants.LOGS_LOCATION, filename), when="midnight", encoding='utf-8')
-        handler.setLevel(logging.DEBUG)
+        handler.setLevel(logging.INFO)
         
         # 定义处理器输出格式
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - File \"%(pathname)s\", line %(lineno)d: %(message)s")

@@ -10,6 +10,11 @@
     db_conf.key 是解密 db_conf.yaml 的密钥
     db_conf.yaml 记录连接信息
     
+# 编译
+    通过pyinstaller编译
+    pyinstaller build.spec
+    编译结果在目录：dist\密码管理器
+
 # Git 使用
     git config --global user.email "you@example.com"
     git config --global user.name "Your Name"
