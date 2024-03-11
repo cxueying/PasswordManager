@@ -1,13 +1,13 @@
 import sys
 from PyQt6.QtWidgets import QApplication
-from gui.main import MainWindow
+from gui.login import Login
 from logger.log import log
 
 
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
-    main_window = MainWindow()
+    login = Login()
     sys.exit(app.exec())
 
 

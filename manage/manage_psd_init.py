@@ -4,18 +4,28 @@ import getpass
 from pathlib import Path
 from cryptography.fernet import Fernet
 from db.db_manage import DatabaseManager
-from config import constants
 from logger.log import log
 
 class PasswordManagerInit:
     def __init__(self):
+        self.__init_constances()
+        
         self.key = self.__import_key() or self.__generate_key()
         self.fernet = Fernet(self.key)
+        
         self.connected = False
         self.db_manager = self.create_db_conn()
+        self.__add_admin()
+
+    def __init_constances(self):
+        self.DB_CONF_KEY = r".\assets\config\db_conf.key"
+        self.DB_CONF = r".\assets\config\db_conf.yaml"
+        self.DB_KEY = r".\assets\config\database.key"
+        self.CONF_PATH = r".\assets\config"
+        
 
     def __import_key(self):   # 导入数据库密钥
-        path = Path(constants.DB_KEY)
+        path = Path(self.DB_KEY)
         if not path.exists() or not path.read_bytes():  # 文件不存在或文件为空
             log.debug("加载数据库密钥失败：数据库密钥不存在")
             return None
@@ -26,14 +36,14 @@ class PasswordManagerInit:
     def __generate_key(self):
         key = Fernet.generate_key()
         # 确保config目录存在 
-        if not Path(constants.CONF_PATH).exists():
-            log.debug(f"目录 {Path(constants.CONF_PATH)} 不存在")
-            if not Path(constants.CONF_PATH).parent.exists():
-                Path(constants.CONF_PATH).parent.mkdir()
-            Path(constants.CONF_PATH).mkdir()
-            log.debug(f"成功创建目录：{Path(constants.CONF_PATH)}")
+        if not Path(self.CONF_PATH).exists():
+            log.debug(f"目录 {Path(self.CONF_PATH)} 不存在")
+            if not Path(self.CONF_PATH).parent.exists():
+                Path(self.CONF_PATH).parent.mkdir()
+            Path(self.CONF_PATH).mkdir()
+            log.debug(f"成功创建目录：{Path(self.CONF_PATH)}")
             
-        path = Path(constants.DB_KEY)
+        path = Path(self.DB_KEY)
         path.write_bytes(key)
         log.debug(f"创建密钥成功：{path}")
         return key
@@ -50,8 +60,8 @@ class PasswordManagerInit:
     # 检查 config 下的数据库配置文件是否合法
     # db_conf.key  db_conf.yaml
     def __check_config_legal(self):
-        path_db_conf_yaml = Path(constants.DB_CONF)
-        path_db_conf_key = Path(constants.DB_CONF_KEY)
+        path_db_conf_yaml = Path(self.DB_CONF)
+        path_db_conf_key = Path(self.DB_CONF_KEY)
         
         # 文件缺失
         if not path_db_conf_key.exists() or not path_db_conf_yaml.exists():
@@ -101,8 +111,8 @@ class PasswordManagerInit:
         return True
     
     def __load_db_config(self):
-        path_db_conf_yaml = Path(constants.DB_CONF)
-        path_db_conf_key = Path(constants.DB_CONF_KEY)
+        path_db_conf_yaml = Path(self.DB_CONF)
+        path_db_conf_key = Path(self.DB_CONF_KEY)
         
         load_fernet = Fernet(path_db_conf_key.read_bytes())
         conf_dict = yaml.safe_load(path_db_conf_yaml.read_text())
@@ -114,17 +124,17 @@ class PasswordManagerInit:
             "database": load_fernet.decrypt(conf_dict["database"].encode()).decode(),
         }
 
-    def create_db_config(self, host, user, password, database=constants.DB_NAME):
+    def create_db_config(self, host, user, password, database="password_manager"):
         # 创建密钥并导出
         db_conf_key = Fernet.generate_key()
-        path_db_conf_key = Path(constants.DB_CONF_KEY)
+        path_db_conf_key = Path(self.DB_CONF_KEY)
         path_db_conf_key.write_bytes(db_conf_key)
         log.debug("数据库配置文件密钥创建成功")
         log.debug(path_db_conf_key)
         
         db_conf_fernet = Fernet(db_conf_key)
         
-        path_db_conf_yaml = Path(constants.DB_CONF)
+        path_db_conf_yaml = Path(self.DB_CONF)
         path_db_conf_yaml.write_text(
             f'host: "{db_conf_fernet.encrypt(host.encode()).decode()}"\n' +
             f'user: "{db_conf_fernet.encrypt(user.encode()).decode()}"\n' +
@@ -167,3 +177,11 @@ class PasswordManagerInit:
         
     def is_db_connected(self):
         return self.connected
+    
+    def __add_admin(self):
+        if self.db_manager.has_admin():
+            log.debug("管理员账号已存在")
+            return
+        else:
+            self.add_user("admin", "admin")
+            log.debug("添加管理员账户成功")

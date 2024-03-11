@@ -1,6 +1,5 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from config import constants
 from pathlib import Path
 import datetime
 
@@ -8,18 +7,20 @@ import datetime
 class Log():
     
     def __init__(self):
+        self.LOGS_PATH = r".\logs"
         self.logger = logging.getLogger("psdLogger")
         self.__logger_init()
+        
         
     def __add_time_file_handler(self):
         # 输出到文件
         # 创建日志处理器
         filename = datetime.datetime.now().strftime("%Y-%m-%d") + ".log"
         # 确保目录 logs 存在
-        if not Path(constants.LOGS_PATH).exists():
-            Path(constants.LOGS_PATH).mkdir()
+        if not Path(self.LOGS_PATH).exists():
+            Path(self.LOGS_PATH).mkdir()
             
-        handler = TimedRotatingFileHandler(Path(constants.LOGS_PATH, filename), when="midnight", encoding='utf-8')
+        handler = TimedRotatingFileHandler(Path(self.LOGS_PATH, filename), when="midnight", encoding='utf-8')
         handler.setLevel(logging.INFO)
         
         # 定义处理器输出格式

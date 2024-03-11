@@ -43,7 +43,7 @@ class PSDManagePage(QWidget):
             websiteItem = QTableWidgetItem(result["website"])
             websiteItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             
-            usernameItem = QTableWidgetItem(result["username"])
+            usernameItem = QTableWidgetItem(result["account"])
             usernameItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             
             passwordItem = QTableWidgetItem('********')
@@ -101,7 +101,7 @@ class PSDManagePage(QWidget):
         
     def delete_row(self, row):
         website = self.table.item(row, 0).text()
-        username = self.table.item(row, 1).text()
+        account = self.table.item(row, 1).text()
         
         reply = QMessageBox.question(
             self,
@@ -111,7 +111,7 @@ class PSDManagePage(QWidget):
             QMessageBox.StandardButton.No
         )
         if reply == QMessageBox.StandardButton.Yes:
-            manage.delete_password(website, username)
+            manage.delete_password(website, account)
             self.fresh_psd_table()
             self.setStatusBar("删除密码成功", 2000)
         

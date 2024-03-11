@@ -53,12 +53,12 @@ class PSDInputDialog(QDialog):
        
     def onOkClicked(self):
         website = self.websiteEdit.text()
-        username =self.usernameEdit.text()
+        account =self.usernameEdit.text()
         password = self.psdEdit.text()
         if website.strip() == "":  # 检查 websiteEdit 是否为空（或只包含空白字符）
             QMessageBox.warning(self, "提示", "请输入网站")
             return
-        if username.strip() == "":
+        if account.strip() == "":
             QMessageBox.warning(self, "提示", "请输入用户名")
             return
         if password.strip() == "":
@@ -69,3 +69,4 @@ class PSDInputDialog(QDialog):
     def showEvent(self, event):
         super().showEvent(event)
         self.websiteEdit.setFocus()
+        
