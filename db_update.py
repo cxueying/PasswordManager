@@ -17,7 +17,7 @@ class DBUpdate():
             self.conn.cursor().execute(sql)
             log.debug("成功添加新的列")
             
-            sql = f"UPDATE passwords set user = 'Admin'"
+            sql = f"UPDATE passwords set user = 'admin'"
             self.conn.cursor().execute(sql)
             log.debug("成功添加数据")
             
