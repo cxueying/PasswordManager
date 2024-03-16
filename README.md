@@ -9,7 +9,22 @@
     db_conf.key 与 dv_conf.yaml 是一一对应的
     db_conf.key 是解密 db_conf.yaml 的密钥
     db_conf.yaml 记录连接信息
-    
+
+# Mysql创建用户并授予权限
+## 创建用户
+## 修改 username 和 password
+CREATE USER "username"@"localhost" IDENTIFIED BY "password";
+
+## 创建数据库 
+CREATE DATABASE IF NOT EXISTS password_manager;
+
+## 授予权限
+# 修改 username 
+GRANT ALL PRIVILEGES ON password_manager.* TO "username"@"localhost";
+
+## 刷新权限
+FLUSH PRIVILEGES;
+
 # 编译
     通过pyinstaller编译
     pyinstaller build.spec
