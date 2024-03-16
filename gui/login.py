@@ -31,10 +31,10 @@ class Login(QWidget):
             self.psdEdit = QLineEdit(self)
             self.psdEdit.setFocus()
         self.psdEdit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.psdEdit.returnPressed.connect(self.login)
          
         # 添加 登录 按钮
         btn = QPushButton("登录", self)
-        btn.setDefault(True)
         btn.clicked.connect(self.login)
         
         # 按钮水平居中
@@ -82,6 +82,8 @@ class Login(QWidget):
             main_window = MainWindow()
         else:
             QMessageBox().warning(self, "提示", "账号或者密码错误")
+            self.psdEdit.setText("")    # 清空输入的密码
+            self.psdEdit.setFocus()     # 设置焦点
             return
             
         

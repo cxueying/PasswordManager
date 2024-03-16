@@ -107,6 +107,7 @@ class UsersManage:
         
         return self.db_user.get_login()
     
+    
     def set_login(self, user: str):
         """将user的登录状态设置为 T 
 
@@ -119,3 +120,35 @@ class UsersManage:
         """
         return self.db_user.set_login(user)
     
+    
+    def change_psd(self, user: str, old_password: str, new_password: str) -> bool:
+        """修改用户密码
+
+        Args:
+            user (str): 用户
+            old_password (str): 旧密码
+            new_password (str): 新密码
+
+        Returns:
+            True：成功
+            False：失败
+        """
+        
+        if self.login(user, old_password) == True: # 验证通过
+            salt = os.urandom(16)
+        
+            kdf = PBKDF2HMAC(
+                algorithm=hashes.SHA256(),
+                length=32,
+                salt=salt,
+                iterations=100000,
+                backend=default_backend()
+            )
+            
+            hashed_password = kdf.derive(new_password.encode())
+            
+            return self.db_user.change_psd(user, salt, hashed_password)
+        
+        else:
+            return False
+        

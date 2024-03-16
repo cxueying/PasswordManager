@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget,QTableWidgetItem, QPushButton, QApplication, QHBoxLayout, QMessageBox, QAbstractItemView
+from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget,QTableWidgetItem, QPushButton, QApplication, QHBoxLayout, QMessageBox
 from PyQt6.QtGui import QIcon, QDesktopServices
 from gui.dialog.psd_input_dialog import PSDInputDialog
 from PyQt6.QtCore import Qt, QSize, QUrl

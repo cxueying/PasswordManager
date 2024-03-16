@@ -1,6 +1,6 @@
-from PyQt6.QtGui import QShowEvent
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QMainWindow, QStatusBar, QVBoxLayout, QPushButton, QStackedWidget, QApplication
 from gui.page.psd_manage_page import PSDManagePage
+from gui.page.setting_page import SettingPage
 
 
 class MainWindow(QMainWindow):
@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         
         self.setWindowTitle("密码管理器")
-        self.setMinimumSize(640, 360)
+        self.setMinimumSize(640, 360)   
         self.resize(1280, 720)
         
         # 居中显示
@@ -46,19 +46,22 @@ class MainWindow(QMainWindow):
     def main_container_init(self):
         # 创建页面
         self.psd_manage_page = PSDManagePage(self)
+        self.setting_page = SettingPage()
+        
         
         # 添加页面
         self.main_container.addWidget(self.psd_manage_page)
+        self.main_container.addWidget(self.setting_page)
         
         
     def menu_init(self):
         vbox = QVBoxLayout()
 
         main_button = self.MenuButton("密码管理")
-        main_button.clicked.connect(lambda: self.toggle_psd_manage_page())
+        main_button.clicked.connect(self.toggle_psd_manage_page)
     
-        setting_button = self.MenuButton("修改密码")
-        # setting_button.clicked.connect()
+        setting_button = self.MenuButton("设置")
+        setting_button.clicked.connect(lambda: self.main_container.setCurrentIndex(1))
             
         exit_button = self.MenuButton("退出")
         exit_button.clicked.connect(QApplication.instance().quit)

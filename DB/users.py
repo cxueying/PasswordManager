@@ -126,3 +126,29 @@ class DBUsers:
         except mysql.connector.Error as e:
             log.error(e)
             return False
+        
+    
+    def change_psd(self, user: str, salt: bytes, password: bytes) -> bool:
+        """修改用户密码
+
+        Args:
+            user (str): 用户
+            salt (bytes): 盐值
+            password (bytes): 密码
+
+        Returns:
+            True：成功
+            False：失败
+        """
+        
+        try:
+            self.conn.cursor().execute(
+                "UPDATE users SET salt = %s, password = %s where user = %s",
+                (salt, password, user)
+            )
+            self.conn.commit()
+            return True
+        
+        except mysql.connector.Error as e:
+            log.error(e)
+            return False
