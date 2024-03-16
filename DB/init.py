@@ -132,7 +132,7 @@ class DBInit:
             return None
     
     
-    def create_config(self, host: str, user: str, password: str, database: str = "password_manager_dev"):
+    def create_config(self, host: str, user: str, password: str, database: str = "password_manager"):
         """创建数据库配置文件并导出
         """
         
