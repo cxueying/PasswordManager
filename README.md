@@ -11,16 +11,16 @@
     db_conf.yaml 记录连接信息
 
 # Mysql创建用户并授予权限
-## 创建用户
+### 创建用户
     CREATE USER "username"@"localhost" IDENTIFIED BY "password";
 
-## 创建数据库 
+### 创建数据库 
     CREATE DATABASE IF NOT EXISTS password_manager;
 
-## 授予权限
+### 授予权限
     GRANT ALL PRIVILEGES ON password_manager.* TO "username"@"localhost";
 
-## 刷新权限
+### 刷新权限
     FLUSH PRIVILEGES;
 
 # 编译
