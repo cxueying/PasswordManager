@@ -1,15 +1,22 @@
-from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget,QTableWidgetItem, QPushButton, QSpacerItem, QSizePolicy, QApplication, QHBoxLayout, QMessageBox
-from PyQt6.QtGui import QColor, QIcon, QDesktopServices
-from PyQt6.QtCore import Qt, QSize, QUrl
-from manage.manage_psd import manage
+from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget,QTableWidgetItem, QPushButton, QApplication, QHBoxLayout, QMessageBox, QAbstractItemView
+from PyQt6.QtGui import QIcon, QDesktopServices
 from gui.dialog.psd_input_dialog import PSDInputDialog
+from PyQt6.QtCore import Qt, QSize, QUrl
+from manage.passwords import PSDManager
+from manage.users import UsersManage
 
 
 class PSDManagePage(QWidget):
     def __init__(self, parent):
         super().__init__()
+        self.user_manage = UsersManage()
+        self.psd_manage = PSDManager()
+        
         self.parent = parent
+        self.user = self.user_manage.get_login()
+        
         self.initUI()
+
         
     def initUI(self):
         self.grid_layout = QGridLayout()
@@ -27,13 +34,14 @@ class PSDManagePage(QWidget):
         self.table.setHorizontalHeaderLabels(["网站", "用户名", "密码", "显示密码", "删除"])
         # 不允许修改表格内容
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+
         
         self.table.setColumnWidth(0, 200)
         
     
     def fresh_psd_table(self):
         self.table.setRowCount(0)
-        results = manage.get_all_password()
+        results = self.psd_manage.get(self.user)
         if results == None:
             return 
         
@@ -72,6 +80,7 @@ class PSDManagePage(QWidget):
         for row in range(self.table.rowCount()):
             self.table.setRowHeight(row, 50)
         
+        
     
     def add_Password_button(self):
         add_button = QPushButton("添加密码")
@@ -88,12 +97,10 @@ class PSDManagePage(QWidget):
         
         
     def add_button_clicked(self):
-        if not manage.is_db_connected():
-            QMessageBox.warning(self, "错误", "数据库未连接")
-            return
+        
         dialog = PSDInputDialog()
         if dialog.exec():
-            if manage.add_password(dialog.websiteEdit.text(), dialog.usernameEdit.text(), dialog.psdEdit.text()) == False:
+            if self.psd_manage.add(self.user, dialog.websiteEdit.text(), dialog.usernameEdit.text(), dialog.psdEdit.text()) == False:
                 QMessageBox.warning(self, "错误", "添加密码失败")
             self.fresh_psd_table()
             self.setStatusBar("添加密码成功", 2000)
@@ -111,18 +118,18 @@ class PSDManagePage(QWidget):
             QMessageBox.StandardButton.No
         )
         if reply == QMessageBox.StandardButton.Yes:
-            manage.delete_password(website, account)
+            self.psd_manage.delete(self.user, website, account)
             self.fresh_psd_table()
             self.setStatusBar("删除密码成功", 2000)
         
         
     def show_password(self, row, password, btn):
         password_item = self.table.item(row, 2)
-        if password_item.text() == manage.decrypt(password):
+        if password_item.text() == self.psd_manage.decrypt(password):
             password_item.setText('********')
             btn.setIcon(QIcon(r".\assets\icon\show.png"))
         else:
-            password_item.setText(manage.decrypt(password))
+            password_item.setText(self.psd_manage.decrypt(password))
             btn.setIcon(QIcon(r".\assets\icon\hide.png"))
         
         
@@ -137,3 +144,4 @@ class PSDManagePage(QWidget):
             
     def setStatusBar(self, message, time):
         self.parent.statusBar.showMessage(message, time)
+

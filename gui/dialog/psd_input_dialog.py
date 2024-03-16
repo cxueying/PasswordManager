@@ -1,11 +1,13 @@
 from PyQt6.QtWidgets import QDialog, QLineEdit, QLabel, QPushButton, QGridLayout, QHBoxLayout, QWidget, QVBoxLayout, QMessageBox
-
+from PyQt6.QtGui import QFont
 class PSDInputDialog(QDialog):
     """添加密码对话框
     """
     def __init__(self):
         super().__init__()
         self.initUI()
+        
+        self.setMinimumSize(400, 360)
 
     def initUI(self):
         self.setWindowTitle("添加密码")
@@ -22,8 +24,22 @@ class PSDInputDialog(QDialog):
         psd_lbl = QLabel("密码：")
 
         # 提交按钮
-        self.btn = QPushButton('OK', self)
-        self.btn.clicked.connect(self.onOkClicked)
+        btn = QPushButton('OK', self)
+        btn.clicked.connect(self.onOkClicked)
+        
+        # 设置文字样式
+        font = QFont()
+        font.setPixelSize(16)
+        
+        self.websiteEdit.setFont(font)
+        self.usernameEdit.setFont(font)
+        self.psdEdit.setFont(font)
+        
+        website_lbl.setFont(font)
+        name_lbl.setFont(font)
+        psd_lbl.setFont(font)
+
+        btn.setFont(font)        
         
         # 表格排列
         self.psd_input = QWidget()
@@ -40,7 +56,7 @@ class PSDInputDialog(QDialog):
         # 提交按钮水平居中
         self.hbox = QHBoxLayout()
         self.hbox.addStretch(1)
-        self.hbox.addWidget(self.btn)
+        self.hbox.addWidget(btn)
         self.hbox.addStretch(1)
 
         # 表格在上， 提交按钮在下

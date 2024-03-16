@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QPushButton, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 from PyQt6.QtGui import QFont
-from manage.manage_psd import manage
 
 class DBConfPage(QWidget):
     def __init__(self):
@@ -40,7 +39,7 @@ class DBConfPage(QWidget):
         user.setFont(font)
         password.setFont(font)
         
-        db_conf = manage.get_db_conf()
+        db_conf = None
         
         if db_conf == None:
             self.hostEdit = QLineEdit(self)
@@ -80,24 +79,24 @@ class DBConfPage(QWidget):
         self.db_conf.setLayout(vbox)
         
         
-    def update_db_conf(self):
-        host = self.hostEdit.text()
-        user = self.userEdit.text()
-        password = self.passwordEdit.text()
+    # def update_db_conf(self):
+    #     host = self.hostEdit.text()
+    #     user = self.userEdit.text()
+    #     password = self.passwordEdit.text()
         
-        if host.strip() == "":  # 检查 websiteEdit 是否为空（或只包含空白字符）
-            QMessageBox.warning(self, "提示", "请输入主机地址")
-            return
-        if user.strip() == "":
-            QMessageBox.warning(self, "提示", "请输入用户名")
-            return
-        if password.strip() == "":
-            QMessageBox.warning(self, "提示", "请输入密码")
-            return
+    #     if host.strip() == "":  # 检查 websiteEdit 是否为空（或只包含空白字符）
+    #         QMessageBox.warning(self, "提示", "请输入主机地址")
+    #         return
+    #     if user.strip() == "":
+    #         QMessageBox.warning(self, "提示", "请输入用户名")
+    #         return
+    #     if password.strip() == "":
+    #         QMessageBox.warning(self, "提示", "请输入密码")
+    #         return
         
-        manage.create_db_config(host, user, password)
-        manage.update_db_manage()
-        self.set_db_status_style()
+    #     manageInit.create_config(host, user, password)
+    #     manageInit.update_db_init()
+    #     self.set_db_status_style()
         
         
     def create_db_info_widget(self):
@@ -120,19 +119,19 @@ class DBConfPage(QWidget):
         
         self.db_info.setLayout(hbox)
         
-    def set_db_status_style(self):
-        if manage.is_db_connected():
-            self.db_status.setText("已连接")
-            self.db_status.setStyleSheet("""
-                QLabel {
-                    color: #00FF00;
-                }
-            """)
+    # def set_db_status_style(self):
+    #     if manageInit.connected:
+    #         self.db_status.setText("已连接")
+    #         self.db_status.setStyleSheet("""
+    #             QLabel {
+    #                 color: #00FF00;
+    #             }
+    #         """)
         
-        else:
-            self.db_status.setText("未连接")
-            self.db_status.setStyleSheet("""
-                QLabel {
-                    color: #FF0000;
-                }
-            """)
+    #     else:
+    #         self.db_status.setText("未连接")
+    #         self.db_status.setStyleSheet("""
+    #             QLabel {
+    #                 color: #FF0000;
+    #             }
+    #         """)

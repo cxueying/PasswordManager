@@ -1,20 +1,27 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QMessageBox
-from PyQt6.QtGui import QFont
 from gui.main import MainWindow
-from manage.manage_psd import manage
+from manage.users import UsersManage
+from PyQt6.QtGui import QFont
 from logger.log import log
 
 class Login(QWidget):
     def __init__(self):
         super().__init__()
-        
+        self.user_manage = UsersManage()
         self.initUI()
+        
+        self.frameGeometry().moveCenter(self.screen().availableGeometry().center())
+        self.setMinimumSize(400, 360)
+        self.setMaximumSize(400, 360)
+        self.setWindowTitle("登录")
+        self.show()
         
     def initUI(self):
         user_label = QLabel("用户名：")
         psd_label = QLabel("密码：")
         
-        user = manage.get_user_login()
+        # 显示登录用户
+        user = self.user_manage.get_login()
         if user == None:
             self.userEdit = QLineEdit(self)
             self.psdEdit = QLineEdit(self)
@@ -24,24 +31,29 @@ class Login(QWidget):
             self.psdEdit = QLineEdit(self)
             self.psdEdit.setFocus()
         self.psdEdit.setEchoMode(QLineEdit.EchoMode.Password)
-        
+         
+        # 添加 登录 按钮
         btn = QPushButton("登录", self)
         btn.setDefault(True)
         btn.clicked.connect(self.login)
         
+        # 按钮水平居中
         hbox = QHBoxLayout()
         hbox.addStretch(1)
         hbox.addWidget(btn)
         hbox.addStretch(1)
         
+        # 设置字体样式
         font = QFont()
         font.setPointSize(16)
+        
         user_label.setFont(font)
         psd_label.setFont(font)
         self.userEdit.setFont(font)
         self.psdEdit.setFont(font)
         btn.setFont(font)
         
+        # 布局全部元素
         grid = QGridLayout()
         grid.addWidget(user_label, 0, 0)
         grid.addWidget(self.userEdit, 0, 1)
@@ -51,11 +63,6 @@ class Login(QWidget):
         
         self.setLayout(grid)
         
-        self.frameGeometry().moveCenter(self.screen().availableGeometry().center())
-        self.setMinimumSize(400, 300)
-        self.setMaximumSize(400, 400)
-        self.setWindowTitle("登录")
-        self.show()
         
     def login(self):
         user = self.userEdit.text()
@@ -67,14 +74,14 @@ class Login(QWidget):
         if psd.strip() == "":
             QMessageBox.warning(self, "提示", "请输入密码")
             return
-        
-        if manage.login(user, psd):
+
+        if self.user_manage.login(user, psd):
             self.close()
             log.info("登录成功")
-            manage.user_login(user)
+            self.user_manage.set_login(user)
             main_window = MainWindow()
         else:
             QMessageBox().warning(self, "提示", "账号或者密码错误")
             return
-        
+            
         
