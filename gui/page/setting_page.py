@@ -81,7 +81,7 @@ class SettingPage(QWidget):
         return_button.setConnet(test)
         
         
-        about_txt = "版本号：v2.3.3\n开发者：Eroz"
+        about_txt = "版本号：v2.3.3\n开发者：cxueying"
         
         about_lbl = QLabel()
         about_lbl.setText(about_txt)
