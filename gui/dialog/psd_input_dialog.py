@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import QDialog, QLineEdit, QLabel, QPushButton, QGridLayout, QHBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QDialog, QLineEdit, QLabel, QPushButton, QGridLayout, QHBoxLayout, QMessageBox, QCheckBox
 from PyQt6.QtGui import QFont
+from PyQt6.QtCore import Qt
 
 
 class PSDInputDialog(QDialog):
@@ -28,6 +29,12 @@ class PSDInputDialog(QDialog):
         website_lbl = QLabel("网站：")
         name_lbl = QLabel("名字：")
         psd_lbl = QLabel("密码：")
+
+        # 显示、隐藏密码
+        check = QCheckBox("显示密码")
+        check.toggle()
+        check.setCheckState(Qt.CheckState.Unchecked)
+        check.stateChanged.connect(self.change)
 
         # 提交按钮
         btn = QPushButton('OK', self)
@@ -61,7 +68,8 @@ class PSDInputDialog(QDialog):
         grid.addWidget(self.usernameEdit, 1, 1)
         grid.addWidget(psd_lbl, 2, 0)
         grid.addWidget(self.psdEdit, 2, 1)
-        grid.addLayout(hbox, 3, 0, 1, 2)
+        grid.addWidget(check, 3, 0, 1, 2)
+        grid.addLayout(hbox, 4, 0, 1, 2)
 
         
         self.setLayout(grid)
@@ -83,3 +91,9 @@ class PSDInputDialog(QDialog):
         
         self.accept()  # 如果 QLineEdit 中有文本，则接受对话框（关闭并返回 QDialog.Accepted）
      
+    def change(self, state):
+        if state == Qt.CheckState.Checked.value:
+            self.psdEdit.setEchoMode(QLineEdit.EchoMode.Normal)
+        
+        else:
+            self.psdEdit.setEchoMode(QLineEdit.EchoMode.Password)
