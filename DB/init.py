@@ -212,8 +212,9 @@ class DBInit:
         """创建表格
         """
         
-        self.__create_table_passwords()
         self.__create_table_users()
+        self.__create_table_passwords()
+        
     
     
     def __create_table_passwords(self):
@@ -227,7 +228,8 @@ class DBInit:
                     website VARCHAR(255) NOT NULL,
                     account VARCHAR(255) NOT NULL,
                     password VARCHAR(255) NOT NULL,
-                    PRIMARY KEY(user, website, account)
+                    PRIMARY KEY (user, website, account),
+                    FOREIGN KEY (user) REFERENCES users(user)
                 )
             """)
         except mysql.connector.Error as e:
