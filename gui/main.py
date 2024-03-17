@@ -1,4 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QMainWindow, QStatusBar, QVBoxLayout, QPushButton, QStackedWidget, QApplication
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QSize
 from gui.page.psd_manage_page import PSDManagePage
 from gui.page.setting_page import SettingPage
 
@@ -58,12 +60,18 @@ class MainWindow(QMainWindow):
         vbox = QVBoxLayout()
 
         main_button = self.MenuButton("密码管理")
+        main_button.setIcon(QIcon(r".\assets\icon\password.png"))
+        main_button.setIconSize(QSize(32, 32))
         main_button.clicked.connect(self.toggle_psd_manage_page)
     
         setting_button = self.MenuButton("设置")
+        setting_button.setIcon(QIcon(r".\assets\icon\setting.png"))
+        setting_button.setIconSize(QSize(32, 32))
         setting_button.clicked.connect(lambda: self.main_container.setCurrentIndex(1))
             
         exit_button = self.MenuButton("退出")
+        exit_button.setIcon(QIcon(r".\assets\icon\close.png"))
+        exit_button.setIconSize(QSize(32, 32))
         exit_button.clicked.connect(QApplication.instance().quit)
         
         vbox.addWidget(main_button)

@@ -1,11 +1,29 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QListWidgetItem, QMessageBox
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QListWidgetItem, QMessageBox, QPushButton, QHBoxLayout
 from gui.dialog.user_psd_change_dialog import UserPSDChangeDialog
 from manage.users import UsersManage
 from PyQt6.QtGui import QIcon, QFont
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, Qt
 from logger.log import log
 
 class SettingPage(QWidget):
+    
+    class SettingMenu(QPushButton):
+        
+        def __init__(self, title, icon):
+            super().__init__(QIcon(icon), title)
+            self.initUI()
+        
+        def initUI(self):
+            font = QFont()
+            font.setPixelSize(20)
+            self.setFont(font)
+            self.setIconSize(QSize(32, 32))
+            self.setFixedHeight(50)
+            self.setFixedWidth(self.size().width()  )
+            self.setStyleSheet("border: none; text-align: left;")
+        
+        def setConnet(self, func):
+            self.clicked.connect(lambda: func())
     
     def __init__(self):
         super().__init__()
@@ -13,36 +31,21 @@ class SettingPage(QWidget):
         self.initUI()
         
     def initUI(self):
-        self.layout = QVBoxLayout(self)
+        self.setting_widget = QWidget(self)
         
-        self.list_widget = QListWidget(self)
+        self.psd_change_menu = self.SettingMenu("修改密码", r".\assets\icon\psd_change.png")
+        self.psd_change_menu.setConnet(self.user_psd_change)
         
-        self.layout.addWidget(self.list_widget)
+        self.about_menu = self.SettingMenu("关于", r".\assets\icon\about.png")
+        self.about_menu.setConnet(self.about)
         
-        self.add_list_widget("修改密码", r".\assets\icon\psd_change.png")
         
+        vbox = QVBoxLayout(self)
+        vbox.addWidget(self.psd_change_menu)
+        vbox.addWidget(self.about_menu)
+        vbox.addStretch(1)
         
-
-        self.list_widget.itemClicked.connect(self.itemClicked)
-
-    
-    def add_list_widget(self, title: str, icon: str):
-        font = QFont()
-        font.setPixelSize(20)
-        
-        item = QListWidgetItem(self.list_widget)
-        item.setSizeHint(QSize(100, 50))
-        item.setIcon(QIcon(icon))
-        
-        label = QLabel(title, self)
-        label.setFont(font)
-        self.list_widget.setItemWidget(item, label)
-    
-
-    def itemClicked(self, item):
-        setting = self.list_widget.itemWidget(item).text()
-        if setting == "修改密码":
-            self.user_psd_change()
+        self.setting_widget.setLayout(vbox)
             
             
     def user_psd_change(self):
@@ -60,3 +63,38 @@ class SettingPage(QWidget):
                 log.info("修改密码失败")
                 QMessageBox.information(self, "修改密码", "修改密码失败")
             
+
+    def about(self):
+        self.setting_widget.close()
+        
+        font = QFont()
+        font.setPixelSize(20)
+        
+        about_widget = QWidget(self)
+        about_widget.resize(self.size())
+        
+        def test():
+            about_widget.close()
+            self.setting_widget.show()
+            
+        return_button = self.SettingMenu("返回", r".\assets\icon\left_1.png")
+        return_button.setConnet(test)
+        
+        
+        about_txt = """
+        版本号：v2.3.3
+        开发者：Eroz
+        """
+        
+        about_lbl = QLabel()
+        about_lbl.setText(about_txt)
+        about_lbl.setFont(font)
+        about_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter) # 居中对齐
+        
+        vbox = QVBoxLayout()
+        vbox.addWidget(return_button)
+        vbox.addStretch(1)
+        vbox.addWidget(about_lbl)
+        
+        about_widget.setLayout(vbox)
+        about_widget.show()
