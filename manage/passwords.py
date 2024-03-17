@@ -92,8 +92,9 @@ class PSDManager:
             password (str): 密码
 
         Returns:
-            False：添加失败
+            False：数据库异常
             True：添加成功
+            1062：信息已存在
         """
         
         return self.db_psd.add(user, website, account, self.encrypt(password))
@@ -155,6 +156,16 @@ class PSDManager:
         
     
     def update(self, user, **kwargs):
+        """更新信息
+
+        Args:
+            user (_type_): 用户
+
+        Returns:
+            False：数据库异常
+            True：添加成功
+            1062：信息已存在
+        """
         target_key = ("new_website", "new_account", "new_password", "website", "account")
         keys = tuple(kwargs.keys())
         

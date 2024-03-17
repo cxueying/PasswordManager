@@ -39,6 +39,9 @@ class DBPasswords:
             return True
         except mysql.connector.Error as e:
             log.error(e)
+            if e.errno == errorcode.ER_DUP_ENTRY:
+                return 1062
+            
             return False
     
         
@@ -129,7 +132,8 @@ class DBPasswords:
 
         Returns:
             True：成功
-            False：失败
+            False：数据库异常
+            1062：信息已存在
         """
         
         try:

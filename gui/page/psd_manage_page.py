@@ -109,10 +109,15 @@ class PSDManagePage(QWidget):
         
         dialog = PSDInputDialog()
         if dialog.exec():
-            if self.psd_manage.add(self.user, dialog.websiteEdit.text(), dialog.usernameEdit.text(), dialog.psdEdit.text()) == False:
-                QMessageBox.warning(self, "错误", "添加密码失败")
-            self.fresh_psd_table()
-            self.setStatusBar("添加密码成功", 2000)
+            result = self.psd_manage.add(self.user, dialog.websiteEdit.text(), dialog.usernameEdit.text(), dialog.psdEdit.text())
+            if result == 1062:
+                QMessageBox.warning(self, "错误", "信息已存在，不能重复添加相同的信息")
+            elif result == False:
+                QMessageBox.warning(self, "错误", "数据库异常")
+                log.warning("数据库异常")
+            elif result == True:
+                self.fresh_psd_table()
+                self.setStatusBar("添加信息成功")
         
         
     def delete_row(self, row):
