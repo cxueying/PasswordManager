@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import errorcode
 from DB.init import DBInit
 from logger.log import log
 
@@ -117,4 +118,31 @@ class DBPasswords:
                 return True
         except mysql.connector.Error as e:
             log.error(e)
+            return False
+
+
+    def update(self, user: str, **kwargs) -> bool:
+        """更新信息
+
+        Args:
+            user (str): 用户
+
+        Returns:
+            True：成功
+            False：失败
+        """
+        
+        try:
+            self.conn.cursor().execute(
+                "UPDATE passwords SET website = %s, account = %s, password = %s WHERE user = %s and website = %s and account = %s",
+                (kwargs["new_website"], kwargs["new_account"], kwargs["new_password"], user, kwargs["website"], kwargs["account"])
+            )
+            self.conn.commit()
+            return True
+        
+        except mysql.connector.Error as e:
+            log.error(e)
+            if e.errno == errorcode.ER_DUP_ENTRY:
+                return 1062
+            
             return False

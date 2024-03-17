@@ -36,6 +36,9 @@ class Login(QWidget):
         # 添加 登录 按钮
         btn = QPushButton("登录", self)
         btn.clicked.connect(self.login)
+        # 取消默认选中状态
+        btn.setAutoDefault(True)
+        btn.setDefault(True)
         
         # 按钮水平居中
         hbox = QHBoxLayout()

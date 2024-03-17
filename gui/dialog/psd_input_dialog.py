@@ -1,5 +1,7 @@
-from PyQt6.QtWidgets import QDialog, QLineEdit, QLabel, QPushButton, QGridLayout, QHBoxLayout, QWidget, QVBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QDialog, QLineEdit, QLabel, QPushButton, QGridLayout, QHBoxLayout, QMessageBox
 from PyQt6.QtGui import QFont
+
+
 class PSDInputDialog(QDialog):
     """添加密码对话框
     """
@@ -30,9 +32,6 @@ class PSDInputDialog(QDialog):
         # 提交按钮
         btn = QPushButton('OK', self)
         btn.clicked.connect(self.onOkClicked)
-        # 取消默认选中状态
-        btn.setAutoDefault(False)
-        btn.setDefault(False)
         
         # 设置文字样式
         font = QFont()

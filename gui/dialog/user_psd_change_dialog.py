@@ -35,8 +35,6 @@ class UserPSDChangeDialog(QDialog):
         # 提交按钮
         btn = QPushButton('OK', self)
         btn.clicked.connect(self.onOkClicked)
-        btn.setAutoDefault(False)
-        btn.setDefault(False)
         
         # 设置文字样式
         font = QFont()

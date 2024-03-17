@@ -1,9 +1,11 @@
 from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget,QTableWidgetItem, QPushButton, QApplication, QHBoxLayout, QMessageBox
 from PyQt6.QtGui import QIcon, QDesktopServices
 from gui.dialog.psd_input_dialog import PSDInputDialog
+from gui.dialog.psd_edit_dialog import PSDEditDialog
 from PyQt6.QtCore import Qt, QSize, QUrl
 from manage.passwords import PSDManager
 from manage.users import UsersManage
+from logger.log import log
 
 
 class PSDManagePage(QWidget):
@@ -30,8 +32,8 @@ class PSDManagePage(QWidget):
         self.setLayout(self.grid_layout)
         
     def table_init(self):
-        self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["网站", "用户名", "密码", "显示密码", "删除"])
+        self.table.setColumnCount(6)
+        self.table.setHorizontalHeaderLabels(["网站", "账号", "密码", "显示密码", "编辑", "删除"])
         # 不允许修改表格内容
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
 
@@ -68,12 +70,19 @@ class PSDManagePage(QWidget):
             show_btn.clicked.connect(lambda _, row=i, password=result["password"], btn=show_btn: self.show_password(row, password, btn))
             self.table.setCellWidget(i, 3, show_btn)
             
+            # 添加一个编辑按钮
+            edit_btn = QPushButton(self.table)
+            edit_btn.setIcon(QIcon(r".\assets\icon\edit.png"))
+            edit_btn.setIconSize(QSize(32, 32))
+            edit_btn.clicked.connect(lambda _, row=i, password=result["password"]: self.edit(row, password))
+            self.table.setCellWidget(i, 4, edit_btn)
+            
             # 添加一个删除按钮
-            btn = QPushButton(self)
-            btn.setIcon(QIcon(r'.\assets\icon\delete.png'))
-            btn.setIconSize(QSize(32, 32))
-            btn.clicked.connect(lambda _, row=i: self.delete_row(row))
-            self.table.setCellWidget(i, 4, btn)
+            del_btn = QPushButton(self.table)
+            del_btn.setIcon(QIcon(r'.\assets\icon\delete.png'))
+            del_btn.setIconSize(QSize(32, 32))
+            del_btn.clicked.connect(lambda _, row=i: self.delete_row(row))
+            self.table.setCellWidget(i, 5, del_btn)
             
             i += 1
             
@@ -142,6 +151,36 @@ class PSDManagePage(QWidget):
             QApplication.clipboard().setText(cell_content)
             self.setStatusBar("复制成功", 2000)
             
-    def setStatusBar(self, message, time):
+    def setStatusBar(self, message, time = 2000):
         self.parent.statusBar.showMessage(message, time)
 
+
+    def edit(self, row, password):
+        psd_dict = {
+            "website": self.table.item(row, 0).text(),
+            "account": self.table.item(row, 1).text(),
+            "password": self.psd_manage.decrypt(password)
+        }
+        
+        psd_edit_dialog = PSDEditDialog(**psd_dict)
+        
+        if psd_edit_dialog.exec():
+            new_psd_dict = {
+                "new_website": psd_edit_dialog.websiteEdit.text(),
+                "new_account": psd_edit_dialog.accountEdit.text(),
+                "new_password": self.psd_manage.encrypt(psd_edit_dialog.psdEdit.text()),
+                "website": psd_dict["website"],
+                "account": psd_dict["account"]
+            }
+            
+            result = self.psd_manage.update(self.user, **new_psd_dict)
+            
+            if result == True:
+                self.setStatusBar("修改信息成功")
+            elif result == 1062:
+                QMessageBox.warning(self, "提示", "信息已存在")
+            elif result == False:
+                log.warning("数据库异常")
+            
+            self.fresh_psd_table()
+                

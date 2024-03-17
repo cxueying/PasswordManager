@@ -124,7 +124,8 @@ class PSDManager:
                 "password": source_result[2]
             }
             if self.decrypt(source_result[2]) == None:
-                log.debug("解密用户密码失败")
+                log.warning("解密用户密码失败")
+                log.warning(f"用户信息：{result}")
                 continue
             
             results.append(result)
@@ -151,3 +152,14 @@ class PSDManager:
             return False
         else:
             return self.db_psd.delete(user, website, account)
+        
+    
+    def update(self, user, **kwargs):
+        target_key = ("new_website", "new_account", "new_password", "website", "account")
+        keys = tuple(kwargs.keys())
+        
+        if target_key != keys:
+            log.info("key值不匹配")
+            return False
+        else:
+            return self.db_psd.update(user, **kwargs)
