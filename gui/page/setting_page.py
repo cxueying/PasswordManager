@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QListWidgetItem, QMessageBox, QPushButton, QHBoxLayout
 from gui.dialog.user_psd_change_dialog import UserPSDChangeDialog
 from manage.users import UsersManage
-from PyQt6.QtGui import QIcon, QFont
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QIcon, QFont, QDesktopServices
+from PyQt6.QtCore import QSize, Qt, QUrl
 from logger.log import log
 
 class SettingPage(QWidget):
@@ -81,20 +81,25 @@ class SettingPage(QWidget):
         return_button.setConnet(test)
         
         
-        about_txt = """
-        版本号：v2.3.3
-        开发者：Eroz
-        """
+        about_txt = "版本号：v2.3.3\n开发者：Eroz"
         
         about_lbl = QLabel()
         about_lbl.setText(about_txt)
         about_lbl.setFont(font)
         about_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter) # 居中对齐
         
+        def open_link():
+            QDesktopServices.openUrl(QUrl("https://github.com/cxueying"))
+        github_lbl = QLabel("<a href='#'>GitHub</a>")
+        github_lbl.linkActivated.connect(open_link)
+        github_lbl.setFont(font)
+        github_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         vbox = QVBoxLayout()
         vbox.addWidget(return_button)
         vbox.addStretch(1)
         vbox.addWidget(about_lbl)
+        vbox.addWidget(github_lbl)
         
         about_widget.setLayout(vbox)
         about_widget.show()
