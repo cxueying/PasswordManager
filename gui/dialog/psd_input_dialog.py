@@ -27,7 +27,7 @@ class PSDInputDialog(QDialog):
         
         # 标签
         website_lbl = QLabel("网站：")
-        name_lbl = QLabel("名字：")
+        name_lbl = QLabel("账号：")
         psd_lbl = QLabel("密码：")
 
         # 显示、隐藏密码
